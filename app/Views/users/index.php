@@ -36,7 +36,9 @@
                                     <td><?= htmlspecialchars($user['role_name']) ?></td>
                                     <td><?= htmlspecialchars($user['created_at']) ?></td>
                                     <td><?= htmlspecialchars($user['updated_at']) ?></td>
-                                    <td>Редактировать</td>
+                                    <td>
+                                        <a href="/users/edit/<?= $user['id'] ?>" class="action-btn edit-btn">Редактировать</a>
+                                    </td>
                                 </tr>
                             <?php endforeach ?>
                         </tbody>

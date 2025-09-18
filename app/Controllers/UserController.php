@@ -20,7 +20,23 @@ class UserController {
 
         $users = $this->userModel->getAllUsersWithRoles();
 
-        require __DIR__ . '/../Views/users/index.php';
-        
+        require __DIR__ . '/../Views/users/index.php';   
+    }
+
+    public function edit($id) {
+        if (!$this->auth->check()) {
+            header('Location: /login');
+            exit;
+        }
+
+        $user = $this->userModel->findById($id);
+        if (!$user) {
+            header('Location: /users');
+            exit;
+        }
+
+        $roles = $this->userModel->getALlRoles();
+
+        require __DIR__ . '/../Views/users/user.php';
     }
 }

@@ -40,4 +40,10 @@ class User {
         return $sql->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getALlRoles() {
+        $sql = $this->pdo->prepare("SELECT * FROM roles ORDER BY id");
+        $sql->execute();
+        return $sql->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }
