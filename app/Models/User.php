@@ -1,7 +1,7 @@
 <?php
 
 class User {
-    public $pdo;
+    private $pdo;
 
     public function __construct(){
         require_once __DIR__ . '/../../config/database.php';
