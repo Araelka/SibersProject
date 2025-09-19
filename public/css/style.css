@@ -58,7 +58,7 @@ body{
 }
 
 .form-group input, select {
-    width: 250px;
+    min-width: 250px;
     border: 2px solid #6e7889;
     border-radius: 5px;
     font-size: 16px;
@@ -68,6 +68,7 @@ body{
 
 
 .form-content button {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     border: 2px solid #6e7889;
     background-color: #6e7889;
     border-radius: 5px;
@@ -185,6 +186,7 @@ tbody tr:nth-child(even):hover {
     background-color: #dc3545;
     color: white;
     border-color: #dc3545;
+    height: -webkit-fill-available;
 }
 
 .delete-btn:hover {
@@ -198,4 +200,45 @@ hr {
     height: 1px;
     background-color: #6e7889;
     margin: 15px 0;
+}
+
+.user-content {
+    display: flex;
+    gap: 25px;
+    flex-direction: row;
+}
+
+.user-group {
+    width: 500px;
+}
+
+.button-menu {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.button-menu a, 
+.button-menu button {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-decoration: none;
+    border: 2px solid #6e7889;
+    background-color: #6e7889;
+    border-radius: 5px;
+    font-size: 24px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    color: white;
+    padding: 3px 8px;
+}
+
+.button-menu button {
+    border: 2px solid #e0a800;
+    background-color: #e0a800;
+}
+
+.button-menu a:hover, button:hover {
+    transform: scale(1.05);
 }

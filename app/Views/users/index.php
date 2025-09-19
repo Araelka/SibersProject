@@ -16,6 +16,12 @@
 
                 <hr>
 
+                <div class="button-menu" style="justify-content: flex-start;">
+                    <div class="form-group">
+                        <a href="/users">Создать</a>
+                    </div>
+                </div>
+
                 <div>
                     <table>
                         <thead>
@@ -37,7 +43,13 @@
                                     <td><?= htmlspecialchars($user['created_at']) ?></td>
                                     <td><?= htmlspecialchars($user['updated_at']) ?></td>
                                     <td>
+                                        <div style="display: flex; flex-direction: row; gap: 10px;">
                                         <a href="/users/edit/<?= $user['id'] ?>" class="action-btn edit-btn">Редактировать</a>
+                                        <form action="/destroy" method="POST">
+                                            <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                                            <button class="action-btn delete-btn" type="submit">Удалить</button>
+                                        </form>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach ?>

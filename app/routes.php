@@ -29,8 +29,18 @@ elseif ($url === '/users') {
 elseif (preg_match('/^\/users\/edit\/(\d+)$/', $url, $matches)) {
     $userId = $matches[1];
     $controller = new UserController();
-    $controller->edit($userId);
+    if ($method === 'POST') {
+        $controller->edit($userId);
+    } else {
+        $controller->showEditForm($userId);
+    }
 }
+
+elseif ($url === '/destroy' && $method === 'POST') {
+    $controller = new UserController();
+    $controller->destroy();
+}
+
 
 else {
     http_response_code(404);
