@@ -26,9 +26,130 @@ class UserController {
             exit;
         }
 
-        $users = $this->userModel->getAllUsersWithRoles();
+        $sortField = $_GET['sort'] ?? 'id';
+        $sortOrder = $_GET['order'] ?? 'ASC';
+        $page = max(1, intval($_GET['page'] ?? 1));
+
+        $sortFields = ['id', 'login', 'role_id', 'created_at', 'updated_at'];
+
+        if (!in_array($sortField, $sortFields)){
+            $sortField = 'id';
+        }
+
+        if (!in_array(strtoupper($sortOrder), ['ASC', 'DESC'])) {
+            $sortOrder = 'ASC';
+        }
+
+        $totalUsers = $this->userModel->getTotalUsersCount();
+        $totalPages = ceil($totalUsers / 10);
+        $offset = ($page - 1) * 10;
+
+        $users = $this->userModel->getAllUsersWithRoles($sortField, $sortOrder, 10, $offset);
 
         require __DIR__ . '/../Views/users/index.php';   
+    }
+
+    public function showCreateForm() {
+        if (!$this->auth->check()) {
+            header('Location: /login');
+            exit;
+        }
+
+        $currentUser  = $this->auth->user();
+
+        if (!$this->userModel->isAdmin($currentUser['id'])){
+            $error = 'Недостаточно прав для совершения данного действия';
+            header('Location: /login');
+            exit;
+        }
+
+        $roles = $this->userModel->getALlRoles();
+
+        require __DIR__ . '/../Views/users/user.php';
+    }
+
+    public function create() {
+        if (!$this->auth->check()) {
+            header('Location: /login');
+            exit;
+        }
+
+        $currentUser  = $this->auth->user();
+
+        if (!$this->userModel->isAdmin($currentUser['id'])){
+            $error = 'Недостаточно прав для совершения данного действия';
+            header('Location: /login');
+            exit;
+        }
+
+        $login = trim($_POST['login']);
+        $password = $_POST['password'];
+        $role_id = $_POST['role'];
+        $firstName = trim($_POST['firstName']);
+        $secondName = trim($_POST['secondName']);
+        $gender = $_POST['gender'];
+        $birthdate = $_POST['birthdate'];
+
+        $errors = [];
+
+        if (empty($login)) {
+            $errors[] = 'Поле "Логин" не заполненно';
+        }
+
+        if ($this->userModel->findByLogin($login)) {
+            $errors[] = 'Пользователь с таким логином уже существует';
+        }
+
+         if (empty($password)) {
+            $errors[] = 'Поле "Пароль" не заполненно';
+        }
+
+        if (empty($role_id)) {
+            $errors[] = 'Поле "Роль" не заполненно';
+        }
+
+        if (empty($firstName)) {
+            $errors[] = 'Поле "Имя" не заполненно';
+        }
+
+        if (empty($secondName)) {
+            $errors[] = 'Поле "Фамилия" не заполненно';
+        }
+
+        if (empty($gender)) {
+            $errors[] = 'Поле "Пол" не заполненно';
+        }
+
+        if (empty($birthdate)) {
+            $errors[] = 'Поле "Дата рождения" не заполненно';
+        }
+
+        if (!empty($errors)) {
+            $error = implode('<br>', $errors);
+            $roles = $this->userModel->getALlRoles();
+            require __DIR__ . '/../Views/users/user.php';
+            return;
+        }
+
+        $userData = [
+            'login' => $login,
+            'password' => $password,
+            'role_id' => $role_id,
+            'firstName' => $firstName,
+            'secondName' => $secondName,
+            'gender' => $gender,
+            'birthdate' => $birthdate,
+        ];
+
+        if ($this->userModel->create( $userData)) {
+            header('Location: /users');
+            exit;
+        } else {
+            $error = 'Ошибка при создании пользователя';
+            $roles = $this->userModel->getALlRoles();
+            require __DIR__ . '/../Views/users/user.php';
+            return;
+        }
     }
 
     public function showEditForm($id) {

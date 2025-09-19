@@ -16,6 +16,9 @@ class User {
     }
 
     public function findById($id) {
+        if (!is_numeric($id) || $id <=0){
+            return false;
+        }
         $sql = $this->pdo->prepare(query: "SELECT * FROM users WHERE id = ? LIMIT 1");
         $sql->execute([$id]);
         return $sql->fetch(PDO::FETCH_ASSOC);
@@ -27,17 +30,44 @@ class User {
         return $sql->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAllUsersWithRoles() {
-        $sql = $this->pdo->prepare("
+    public function getAllUsersWithRoles($sortField = 'id', $sortOrder = 'ASC', $limit = null, $offset = null) {
+
+        $sortFields = ['id', 'login', 'role_id', 'created_at', 'updated_at'];
+        $sortOrders = ['ASC', 'DESC'];
+
+        if (!in_array($sortField, $sortFields)){
+            $sortField = 'id';
+        }
+
+        if (!in_array(strtoupper($sortOrder), $sortOrders)) {
+            $sortOrder = 'ASC';
+        }
+
+        $sqlQuery = "
             SELECT user.*,
             role.description as role_name
             FROM users user
             LEFT JOIN roles role ON user.role_id = role.id
-            ORDER BY user.id ASC
-        ");
+            ORDER BY user.{$sortField} {$sortOrder}
+        ";
 
+        if ($limit !== null) {
+            $sqlQuery .= " LIMIT {$limit}";
+            if ($offset !== null) {
+                $sqlQuery .= " OFFSET {$offset}";
+            }
+        }
+
+        $sql = $this->pdo->prepare($sqlQuery);
         $sql->execute();
         return $sql->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTotalUsersCount() {
+        $sql = $this->pdo->prepare("SELECT COUNT(*) as count FROM users");
+        $sql->execute();
+        $result = $sql->fetch(PDO::FETCH_ASSOC);
+        return $result['count'];
     }
 
     public function getALlRoles() {
@@ -47,6 +77,9 @@ class User {
     }
 
     public function isAdmin($id) {
+        if (!is_numeric($id) || $id <=0){
+            return false;
+        }
         $sql = $this->pdo->prepare("SELECT role_id FROM users WHERE id = ? LIMIT 1");
         $sql->execute([$id]);
         $result = $sql->fetch(PDO::FETCH_ASSOC);

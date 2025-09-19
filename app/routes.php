@@ -26,6 +26,15 @@ elseif ($url === '/users') {
     $controller->index();
 }
 
+elseif ($url === '/users/create') {
+    $controller = new UserController();
+    if ($method === 'POST') {
+        $controller->create();
+    } else {
+        $controller->showCreateForm();
+    }
+}
+
 elseif (preg_match('/^\/users\/edit\/(\d+)$/', $url, $matches)) {
     $userId = $matches[1];
     $controller = new UserController();
@@ -35,6 +44,7 @@ elseif (preg_match('/^\/users\/edit\/(\d+)$/', $url, $matches)) {
         $controller->showEditForm($userId);
     }
 }
+
 
 elseif ($url === '/destroy' && $method === 'POST') {
     $controller = new UserController();
