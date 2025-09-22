@@ -47,7 +47,7 @@ Perform migration to create tables:
 php database/migrate.php
 
 Step 3. Filling in the initial data
-Launch the sids to create roles and the first user:
+Launch the seeds to create roles and the first user:
 php database/seeds/seed.php
 
 An administrator user will be created:
@@ -104,7 +104,7 @@ Data manipulation: <br>
 
 Auxiliary methods: <br>
 - getTotalUsersCount() - count the total number of users <br>
-- getALlRoles() - get available roles <br>
+- getAllRoles() - get available roles <br>
 - isAdmin($id) - check if the user has administrator rights <br>
 - existByLogin($login, $id) - check the uniqueness of the login <br>
 
