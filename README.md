@@ -91,18 +91,15 @@ Methods: <br>
 User Management System <br>
 The User model <br>
 Provides access to data for user transactions <br>
-
 Getting data: <br>
 - findByLogin($login) - find the user by login <br>
 - findById($id) - find the user by ID <br>
 - findAll() - get all users <br>
 - getAllUsersWithRoles() - get users with information about roles (with sorting/pagination) <br>
-
 Data manipulation: <br>
 - create($data) - create a new user <br>
 - update($id, $data) - update an existing user <br>
 - delete($id) - delete the user <br>
-
 Auxiliary methods: <br>
 - getTotalUsersCount() - count the total number of users <br>
 - getALlRoles() - get available roles <br>
@@ -114,7 +111,6 @@ Read operations: <br>
 - index() - displays a list of users with pagination/sorting <br>
 - showCreateForm() - shows the user creation form <br>
 - showEditForm($id) - shows the user's edit form <br>
-
 Recording operations: <br>
 - create() - processes user creation <br>
 - edit($id) - handles user updates <br>
