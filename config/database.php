@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Database configuration and connection management.
+ */
 class DBConfig {
     const DB_HOST = '127.0.0.1';
     const DB_PORT = '3306';
@@ -9,9 +12,16 @@ class DBConfig {
     const DB_CHARSET = 'utf8mb4';
 }
 
+/**
+ * Singleton class for managing database connections.
+ */
 class DB {
     private static $conn;
 
+    /**
+     * Get a database connection.
+     * @return PDO Database connection.
+     */
     public static function getConnection(){
         if (self::$conn === null) {
             try {
@@ -32,6 +42,9 @@ class DB {
     }
 }
 
+/**
+ * Class for creating and dropping database tables.
+ */
 class Migration {
 
     protected $pdo;
@@ -39,6 +52,11 @@ class Migration {
     public function __construct(){
         $this->pdo = $this->getConnection();
     }
+
+    /**
+     * Get a database connection for migration.
+     * @return PDO Database connection.
+     */
     private function getConnection() {
         try {
             $pdo = new PDO(
@@ -57,6 +75,13 @@ class Migration {
             exit('Connection error: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Create a new table in the database.
+     * @param string $tableName Name of the table.
+     * @param array $columns Column definitions.
+     * @param string $options Additional table options.
+     */
     public function createTable($tableName, $columns, $options = '') {
         $columnsSql = implode(', ', $columns);
         $sql = "CREATE TABLE IF NOT EXISTS `$tableName` ($columnsSql) $options";
@@ -64,6 +89,10 @@ class Migration {
         echo "The '$tableName' table was created successfully\n";
     }
 
+    /**
+     * Drop a table from the database.
+     * @param string $tableName Name of the table.
+     */
     public function dropTable($tableName){
         $sql = "DROP TABLE IF EXISTS `$tableName`";
         $this->pdo->exec($sql);

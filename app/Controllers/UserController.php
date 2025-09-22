@@ -3,15 +3,24 @@
 require_once __DIR__ . '/../Models/User.php';
 require_once __DIR__ . '/../Auth/Auth.php';
 
+/**
+ * Controller for managing users.
+ */
 class UserController {
     private $auth;
     private $userModel;
 
+    /**
+     * Constructor to initialize authentication and user model.
+     */
     public function __construct(){
         $this->auth = new Auth();
         $this->userModel = new User();
     }
 
+    /**
+     * Display the list of users with pagination and sorting.
+     */
     public function index(){
         if (!$this->auth->check()) {
             header('Location: /login');
@@ -21,7 +30,7 @@ class UserController {
         $currentUser  = $this->auth->user();
 
         if (!$this->userModel->isAdmin($currentUser['id'])){
-            $error = 'Недостаточно прав для совершения данного действия';
+            $error = 'You do not have sufficient permissions to perform this action';
             header('Location: /login');
             exit;
         }
@@ -49,6 +58,9 @@ class UserController {
         require __DIR__ . '/../Views/users/index.php';   
     }
 
+    /**
+     * Show the form for creating a new user.
+     */
     public function showCreateForm() {
         if (!$this->auth->check()) {
             header('Location: /login');
@@ -58,16 +70,19 @@ class UserController {
         $currentUser  = $this->auth->user();
 
         if (!$this->userModel->isAdmin($currentUser['id'])){
-            $error = 'Недостаточно прав для совершения данного действия';
+            $error = 'You do not have sufficient permissions to perform this action';
             header('Location: /login');
             exit;
         }
 
-        $roles = $this->userModel->getALlRoles();
+        $roles = $this->userModel->getAllRoles();
 
         require __DIR__ . '/../Views/users/user.php';
     }
 
+    /**
+     * Handle user creation form submission.
+     */
     public function create() {
         if (!$this->auth->check()) {
             header('Location: /login');
@@ -77,56 +92,56 @@ class UserController {
         $currentUser  = $this->auth->user();
 
         if (!$this->userModel->isAdmin($currentUser['id'])){
-            $error = 'Недостаточно прав для совершения данного действия';
+            $error = 'You do not have sufficient permissions to perform this action';
             header('Location: /login');
             exit;
         }
 
-        $login = trim($_POST['login']);
+        $login = htmlspecialchars(trim($_POST['login']));
         $password = $_POST['password'];
         $role_id = $_POST['role'];
-        $firstName = trim($_POST['firstName']);
-        $secondName = trim($_POST['secondName']);
+        $firstName = htmlspecialchars(trim($_POST['firstName']));
+        $secondName = htmlspecialchars(trim($_POST['secondName']));
         $gender = $_POST['gender'];
         $birthdate = $_POST['birthdate'];
 
         $errors = [];
 
-        if (empty($login)) {
-            $errors[] = 'Поле "Логин" не заполненно';
+        if (empty($login) || strlen($login) > 100) {
+            $errors[] = 'Invalid "login"';
         }
 
         if ($this->userModel->findByLogin($login)) {
-            $errors[] = 'Пользователь с таким логином уже существует';
+            $errors[] = 'The username already exists';
         }
 
-         if (empty($password)) {
-            $errors[] = 'Поле "Пароль" не заполненно';
+         if (empty($password) || strlen($password) < 6) {
+            $errors[] = 'Invalid "password"';
         }
 
         if (empty($role_id)) {
-            $errors[] = 'Поле "Роль" не заполненно';
+            $errors[] = 'Invalid "role"';
         }
 
-        if (empty($firstName)) {
-            $errors[] = 'Поле "Имя" не заполненно';
+        if (empty($firstName) || strlen($firstName) > 50) {
+            $errors[] = 'Invalid "firstName"';
         }
 
-        if (empty($secondName)) {
-            $errors[] = 'Поле "Фамилия" не заполненно';
+        if (empty($secondName) || strlen($secondName) > 50) {
+            $errors[] = 'Invalid "secondName"';
         }
 
-        if (empty($gender)) {
-            $errors[] = 'Поле "Пол" не заполненно';
+        if (empty($gender) || !in_array($gender, ['male', 'female'])) {
+            $errors[] = 'Invalid "gender"';
         }
 
         if (empty($birthdate)) {
-            $errors[] = 'Поле "Дата рождения" не заполненно';
+            $errors[] = 'Invalid "birthdate"';
         }
 
         if (!empty($errors)) {
             $error = implode('<br>', $errors);
-            $roles = $this->userModel->getALlRoles();
+            $roles = $this->userModel->getAllRoles();
             require __DIR__ . '/../Views/users/user.php';
             return;
         }
@@ -145,13 +160,17 @@ class UserController {
             header('Location: /users');
             exit;
         } else {
-            $error = 'Ошибка при создании пользователя';
-            $roles = $this->userModel->getALlRoles();
+            $error = 'User creation error';
+            $roles = $this->userModel->getAllRoles();
             require __DIR__ . '/../Views/users/user.php';
             return;
         }
     }
 
+    /**
+     * Show the form for editing an existing user.
+     * @param int $id User ID.
+     */
     public function showEditForm($id) {
         if (!$this->auth->check()) {
             header('Location: /login');
@@ -161,7 +180,7 @@ class UserController {
         $currentUser  = $this->auth->user();
 
         if (!$this->userModel->isAdmin($currentUser['id'])){
-            $error = 'Недостаточно прав для совершения данного действия';
+            $error = 'You do not have sufficient permissions to perform this action';
             header('Location: /login');
             exit;
         }
@@ -173,11 +192,15 @@ class UserController {
             exit;
         }
 
-        $roles = $this->userModel->getALlRoles();
+        $roles = $this->userModel->getAllRoles();
 
         require __DIR__ . '/../Views/users/user.php';
     }
 
+    /**
+     * Handle user update form submission.
+     * @param int $id User ID.
+     */
     public function edit($id) {
         if (!$this->auth->check()) {
             header('Location: /login');
@@ -187,7 +210,7 @@ class UserController {
         $currentUser  = $this->auth->user();
 
         if (!$this->userModel->isAdmin($currentUser['id'])){
-            $error = 'Недостаточно прав для совершения данного действия';
+            $error = 'You do not have sufficient permissions to perform this action';
             header('Location: /login');
             exit;
         }
@@ -199,47 +222,47 @@ class UserController {
             exit;
         }
 
-        $login = trim($_POST['login']);
+        $login = htmlspecialchars(trim($_POST['login']));
         $password = $_POST['password'];
         $role_id = $_POST['role'];
-        $firstName = trim($_POST['firstName']);
-        $secondName = trim($_POST['secondName']);
+        $firstName = htmlspecialchars(trim($_POST['firstName']));
+        $secondName = htmlspecialchars(trim($_POST['secondName']));
         $gender = $_POST['gender'];
         $birthdate = $_POST['birthdate'];
 
         $errors = [];
 
-        if (empty($login)) {
-            $errors[] = 'Поле "Логин" не заполненно';
+        if (empty($login) || strlen($login) > 100) {
+            $errors[] = 'Invalid "login"';
         }
 
         if ($this->userModel->existByLogin($login, $id)) {
-            $errors[] = 'Пользователь с таким логином уже существует';
+            $errors[] = 'The username already exists';
         }
 
         if (empty($role_id)) {
-            $errors[] = 'Поле "Роль" не заполненно';
+            $errors[] = 'Invalid "role"';
         }
 
-        if (empty($firstName)) {
-            $errors[] = 'Поле "Имя" не заполненно';
+        if (empty($firstName) || strlen($firstName) > 50) {
+            $errors[] = 'Invalid "firstName"';
         }
 
-        if (empty($secondName)) {
-            $errors[] = 'Поле "Фамилия" не заполненно';
+        if (empty($secondName) || strlen($secondName) > 50) {
+            $errors[] = 'Invalid "secondName"';
         }
 
-        if (empty($gender)) {
-            $errors[] = 'Поле "Пол" не заполненно';
+        if (empty($gender) || !in_array($gender, ['male', 'female'])) {
+            $errors[] = 'Invalid "gender"';
         }
 
         if (empty($birthdate)) {
-            $errors[] = 'Поле "Дата рождения" не заполненно';
+            $errors[] = 'Invalid "birthdate"';
         }
 
         if (!empty($errors)) {
             $error = implode('<br>', $errors);
-            $roles = $this->userModel->getALlRoles();
+            $roles = $this->userModel->getAllRoles();
             require __DIR__ . '/../Views/users/user.php';
             return;
         }
@@ -253,7 +276,7 @@ class UserController {
             'birthdate' => $birthdate,
         ];
 
-        if (!empty($password)) {
+        if (!empty($password) && strlen($password) >= 6) {
             $userData['password'] = $password;
         }
 
@@ -261,13 +284,16 @@ class UserController {
             header('Location: /users');
             exit;
         } else {
-            $error = 'Ошибка при обновлении пользователя';
-            $roles = $this->userModel->getALlRoles();
+            $error = 'User update error';
+            $roles = $this->userModel->getAllRoles();
             require __DIR__ . '/../Views/users/user.php';
             return;
         }
     }
 
+    /**
+     * Handle user deletion.
+     */
     public function destroy() {
         if (!$this->auth->check()) {
             header('Location: /login');
@@ -277,7 +303,7 @@ class UserController {
         $currentUser  = $this->auth->user();
 
         if (!$this->userModel->isAdmin($currentUser['id'])){
-            $error = 'Недостаточно прав для совершения данного действия';
+            $error = 'You do not have sufficient permissions to perform this action';
             header('Location: /login');
             exit;
         }
@@ -293,7 +319,7 @@ class UserController {
 
 
         if ($this->userModel->isAdmin($userId) || $user['id'] == $currentUser['id']){
-            $error = 'Недостаточно прав для совершения данного действия';
+            $error = 'You do not have sufficient permissions to perform this action';
             header('Location: /users');
             return;
         }
@@ -302,7 +328,7 @@ class UserController {
             header('Location: /users');
             exit;
         } else {
-            $error = 'Ошибка при удалении пользователя';
+            $error = 'User deletion error';
             require __DIR__ . '/../Views/users/index.php';
             return;
         }

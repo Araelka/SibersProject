@@ -1,20 +1,36 @@
 <?php
 
+/**
+ * User model for interacting with a user table in a database.
+ */
 class User {
     private $pdo;
 
+    /**
+     * Constructor to initialize the database connection.
+     */
     public function __construct(){
         require_once __DIR__ . '/../../config/database.php';
         $database = new \DB();
         $this->pdo = $database->getConnection();
     }
 
+    /**
+     * Find a user by their login.
+     * @param string $login The login of the user.
+     * @return array|false User data or false if not found.
+     */
     public function findByLogin($login) {
         $sql = $this->pdo->prepare("SELECT * FROM users WHERE login = ? LIMIT 1");
         $sql->execute([$login]);
         return $sql->fetch(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Find a user by their ID.
+     * @param int $id The ID of the user.
+     * @return array|false User data or false if invalid ID or not found.
+     */
     public function findById($id) {
         if (!is_numeric($id) || $id <=0){
             return false;
@@ -24,12 +40,24 @@ class User {
         return $sql->fetch(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Get all users from the database.
+     * @return array List if users.
+     */
     public function findAll() {
         $sql = $this->pdo->prepare("SELECT * FROM users ORDER BY id ASC");
         $sql->execute();
         return $sql->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Get all users with roles, with the ability to sort and paginate.
+     * @param string $sortField Field to sort by.
+     * @param string $sortOrder Sort order (ASC or DESC).
+     * @param int|null $limit Limit number of records.
+     * @param int|null $offset Offset for pagination.
+     * @return array List of users with roles.
+     */
     public function getAllUsersWithRoles($sortField = 'id', $sortOrder = 'ASC', $limit = null, $offset = null) {
 
         $sortFields = ['id', 'login', 'role_id', 'created_at', 'updated_at'];
@@ -63,6 +91,10 @@ class User {
         return $sql->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Get total number of users in the database.
+     * @return int Total user count.
+     */
     public function getTotalUsersCount() {
         $sql = $this->pdo->prepare("SELECT COUNT(*) as count FROM users");
         $sql->execute();
@@ -70,12 +102,21 @@ class User {
         return $result['count'];
     }
 
-    public function getALlRoles() {
+    /**
+     * Get all available roles from the database.
+     * @return array List of roles.
+     */
+    public function getAllRoles() {
         $sql = $this->pdo->prepare("SELECT * FROM roles ORDER BY id");
         $sql->execute();
         return $sql->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Check if a user is an admin.
+     * @param int $id User ID
+     * @return bool The value is True if the user is an administrator, else False.
+     */
     public function isAdmin($id) {
         if (!is_numeric($id) || $id <=0){
             return false;
@@ -87,6 +128,12 @@ class User {
         return $result && $result['role_id'] == 1;
     }
 
+    /**
+     * Update user data in the database.
+     * @param int $id User ID
+     * @param array $data Updated user data.
+     * @return bool True on success, false on failure.
+     */
     public function update ($id, $data) {
         try {
             $sql = $this->pdo->prepare("
@@ -128,11 +175,16 @@ class User {
 
             return true;
         } catch (Exception $e) {
-            error_log("Ошибка при обновлении пользователя: " . $e->getMessage());
+            error_log("User update error: " . $e->getMessage());
             return false;
         }
     }
 
+    /**
+     * Create a new user in the database.
+     * @param array $data User data.
+     * @return int|false New user ID on success, false on failure.
+     */
     public function create($data) {
         try {
             $sql = $this->pdo->prepare("
@@ -156,21 +208,32 @@ class User {
 
             return false;
         } catch (Exception $e) {
-            error_log("Ошибка при создании пользователя: " . $e->getMessage());
+            error_log("User creation error: " . $e->getMessage());
             return false;
         }
     }
 
+    /**
+     * Delete a user by ID.
+     * @param int $id User ID.
+     * @return bool True on success, false on failure.
+     */
     public function delete ($id) {
         try {
             $sql = $this->pdo->prepare("DELETE FROM users WHERE id = ?");
             return $sql->execute([$id]);
         } catch (Exception $e) {
-            error_log("Ошибка при удалении пользователя: " . $e->getMessage());
+            error_log("User deletion error: " . $e->getMessage());
             return false;
         }
     }
 
+    /**
+     * Check if a login already exists (excluding current user).
+     * @param string $login The login of the user to check.
+     * @param int $id Current user ID to exclude.
+     * @return bool True if login exists, false otherwise.
+     */
     public function existByLogin($login, $id) {
         $sql = $this->pdo->prepare("SELECT id FROM users WHERE login = ? AND id != ? LIMIT 1");
         $sql->execute([$login, $id]);
