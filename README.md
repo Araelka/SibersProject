@@ -33,14 +33,14 @@ During the development, the following were used:
 - PDO extension for php
 - mysql version 8.0
 
-Step 1. Configuring the database configuration
-Open up config/database.php and configure the connection settings:
-const DB_HOST = '127.0.0.1'; // Database host
-const DB_PORT = '3306'; // Port
-const DB_NAME = 'sibers'; // Database name
-const DB_USER = 'root'; // User
-const DB_PASSWORD = '123456'; // Password
-const DB_CHARSET = 'utf8mb4'; // Encoding
+Step 1. Configuring the database configuration <br>
+Open up config/database.php and configure the connection settings: <br>
+const DB_HOST = '127.0.0.1'; // Database host <br>
+const DB_PORT = '3306'; // Port <br>
+const DB_NAME = 'sibers'; // Database name <br>
+const DB_USER = 'root'; // User <br>
+const DB_PASSWORD = '123456'; // Password <br>
+const DB_CHARSET = 'utf8mb4'; // Encoding <br>
 
 Step 2. Creating the database structure
 Perform migration to create tables:
