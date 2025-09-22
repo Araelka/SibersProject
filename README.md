@@ -75,46 +75,46 @@ Allows you to manage the database schema, create and delete tables. <br>
 Authentication <br>
 The Auth class. <br>
 Provides user authentication and session management. <br>
-Methods: <br>
-- login($login, $password) - authenticates user credentials <br>
-- logout() - ends the user's session <br>
-- user() - returns the data of the current user <br>
-- check() - checks the authentication status <br>
+Methods: 
+- login($login, $password) - authenticates user credentials
+- logout() - ends the user's session 
+- user() - returns the data of the current user
+- check() - checks the authentication status
 
 The AuthController class. <br>
 Endpoints: <br>
-Methods: <br>
-- showLoginForm() - displays the login page <br>
-- login() - processes the submission of the login form <br>
-- logout() - processes the user's logout <br>
+Methods:
+- showLoginForm() - displays the login page
+- login() - processes the submission of the login form
+- logout() - processes the user's logout 
 
 User Management System <br>
 The User model <br>
 Provides access to data for user transactions <br>
-Getting data: <br>
-- findByLogin($login) - find the user by login <br>
-- findById($id) - find the user by ID <br>
-- findAll() - get all users <br>
-- getAllUsersWithRoles() - get users with information about roles (with sorting/pagination) <br>
+Getting data: 
+- findByLogin($login) - find the user by login
+- findById($id) - find the user by ID
+- findAll() - get all users
+- getAllUsersWithRoles() - get users with information about roles (with sorting/pagination) 
 
-Data manipulation: <br>
-- create($data) - create a new user <br>
-- update($id, $data) - update an existing user <br>
-- delete($id) - delete the user <br>
+Data manipulation: 
+- create($data) - create a new user 
+- update($id, $data) - update an existing user 
+- delete($id) - delete the user 
 
-Auxiliary methods: <br>
-- getTotalUsersCount() - count the total number of users <br>
-- getAllRoles() - get available roles <br>
-- isAdmin($id) - check if the user has administrator rights <br>
-- existByLogin($login, $id) - check the uniqueness of the login <br>
+Auxiliary methods:
+- getTotalUsersCount() - count the total number of users 
+- getAllRoles() - get available roles 
+- isAdmin($id) - check if the user has administrator rights 
+- existByLogin($login, $id) - check the uniqueness of the login 
 
 The UserController class.  <br>
-Read operations:  <br>
-- index() - displays a list of users with pagination/sorting <br>
-- showCreateForm() - shows the user creation form <br>
-- showEditForm($id) - shows the user's edit form <br>
+Read operations:  
+- index() - displays a list of users with pagination/sorting
+- showCreateForm() - shows the user creation form 
+- showEditForm($id) - shows the user's edit form 
 
-Recording operations:  <br>
-- create() - processes user creation <br>
-- edit($id) - handles user updates <br>
-- destroy() - handles user deletion <br>
+Recording operations: 
+- create() - processes user creation 
+- edit($id) - handles user updates 
+- destroy() - handles user deletion 
